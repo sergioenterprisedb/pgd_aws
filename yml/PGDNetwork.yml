@@ -1,0 +1,118 @@
+---
+architecture: PGD-Always-ON
+cluster_name: sro-pgdnetwork
+cluster_tags:
+  Owner: SRO
+
+cluster_bucket: sergio3-bucket
+
+cluster_rules:
+# curl ipinfo.io/ip
+# 2.13.234.57
+- cidr_ip: 2.13.234.57/32  # IMPORTANT:  Modify 0.0.0.0 in this rule to be the IP/subnet of the system where you are running TPAExec.  Allows SSH access to cluster nodes (e.g. for TPAExec). 
+  from_port: 22
+  proto: tcp
+  to_port: 22
+- cidr_ip: 2.13.234.57/32
+  from_port: 6432
+  proto: tcp
+  to_port: 6432
+- cidr_ip: 10.33.0.0/16
+  from_port: 0
+  proto: tcp
+  to_port: 65535
+- cidr_ip: 10.34.0.0/16
+  from_port: 0
+  proto: tcp
+  to_port: 65535
+- cidr_ip: 10.35.0.0/16
+  from_port: 0
+  proto: tcp
+  to_port: 65535
+
+
+ec2_vpc:
+  us-east-2:
+    Name: PGDUSEAST2
+    cidr: 10.33.0.0/16
+  us-west-2:
+    Name: PGDUSWEST2
+    cidr: 10.34.0.0/16
+  us-east-1:
+    Name: PGDUSEAST1
+    cidr: 10.35.0.0/16
+
+locations:
+- Name: useast2a
+  az: us-east-2a
+  region: us-east-2
+  subnet: 10.33.1.64/26
+- Name: useast2b
+  az: us-east-2b
+  region: us-east-2
+  subnet: 10.33.2.64/26
+- Name: useast2c
+  az: us-east-2c
+  region: us-east-2
+  subnet: 10.33.3.64/26
+- Name: uswest2a
+  az: us-west-2a
+  region: us-west-2
+  subnet: 10.34.1.64/26
+- Name: uswest2b
+  az: us-west-2b
+  region: us-west-2
+  subnet: 10.34.2.64/26
+- Name: uswest2c
+  az: us-west-2c
+  region: us-west-2
+  subnet: 10.34.3.64/26
+- Name: useast1a
+  az: us-east-1a
+  region: us-east-1
+  subnet: 10.35.1.64/26
+
+ec2_ami:
+  Name: debian-10-amd64-20230601-1398
+  Owner: '136693071363'
+ec2_instance_reachability: public
+
+instance_defaults:
+  default_volumes:
+  - device_name: root
+    encrypted: true
+    volume_size: 16
+    volume_type: gp2
+  - device_name: /dev/xvdf
+    encrypted: true
+    vars:
+      volume_for: postgres_data
+    volume_size: 64
+    volume_type: gp2
+  platform: aws
+  type: t3.micro
+  vars:
+    ansible_user: ec2-user
+
+instances:
+- Name: deleteme_useast2a
+  node: 1
+  location: useast2a
+- Name: deleteme_useast2b
+  node: 2
+  location: useast2b
+- Name: deleteme_useast2c
+  node: 3
+  location: useast2c
+- Name: deleteme_uswest2a
+  node: 4
+  location: uswest2a
+- Name: deleteme_uswest2b
+  node: 5
+  location: uswest2b
+- Name: deleteme_uswest2c
+  node: 6
+  location: uswest2c
+- Name: deleteme_useast1a
+  node: 7
+  location: useast1a
