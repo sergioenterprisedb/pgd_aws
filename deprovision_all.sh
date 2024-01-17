@@ -13,5 +13,5 @@ sleep 5
 ./delete_peering.sh
 sleep 5
 tpaexec deprovision ~/sro-pgdnetwork
-sleep 5
-./delete_peering.sh
+#sleep 5
+#./delete_peering.sh
